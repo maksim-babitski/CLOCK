@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head> 
+    <meta charset="utf-8">
+</head>
+<body>
+  
+  <svg id="clockBox" xmlns="http://www.w3.org/2000/svg" width="390" height="390" viewBox="0 0 390 390"></svg>  
+
+
+  <script>
+    
+    'use strict';
+
+    var r = 195; //радиус циферблата
+    var w = 14; // ширина часовой стрелки
+
+    var clockBox=document.getElementById("clockBox");
+
+    var clock=document.createElementNS("http://www.w3.org/2000/svg",'circle'); //циферблат
+    clock.setAttribute("fill","#e2a940");
+    clock.setAttribute("r",r);
+    clock.setAttribute("cx",r);
+    clock.setAttribute("cy",r);
+    clockBox.appendChild(clock);
+
+    
+
+   
+    for (let i = 1; i <= 12; i++) { //добавляем цифры на циферблат
+        var numCircle=document.createElementNS("http://www.w3.org/2000/svg",'circle');
+        var clockCenterX = r; //координаты центра циферблата
+        var clockCenterY = r;       
+        var angle = ((360/12)/180*Math.PI)*i;      
+        var numCircleCenterX = clockCenterX + 0.85*r*Math.sin(angle); //координаты центра кругов с цифрами
+        var numCircleCenterY = clockCenterY - 0.85*r*Math.cos(angle);
+
+        numCircle.setAttribute("fill","#1da57c");
+        numCircle.setAttribute("r",0.11*r);
+        numCircle.setAttribute("cx",numCircleCenterX);
+        numCircle.setAttribute("cy",numCircleCenterY);
+        clockBox.appendChild(numCircle);
+
+        var numText=document.createElementNS("http://www.w3.org/2000/svg",'text');
+        numText.setAttribute("x",numCircleCenterX);
+        numText.setAttribute("y",numCircleCenterY+5);
+        numText.setAttribute("text-anchor",'middle');
+        numText.setAttribute("font-size",20);
+        numText.setAttribute("font-weight",700);
+        numText.textContent = i;
+        clockBox.appendChild(numText);       
+    }
+
+    var hour=document.createElementNS("http://www.w3.org/2000/svg",'line'); //часовая стрелка
+    hour.setAttribute("stroke","rgb(51, 49, 49)");
+    hour.setAttribute("stroke-linecap","round");
+    hour.setAttribute("stroke-width",w);
+    hour.setAttribute("x1",0);
+    hour.setAttribute("y1",0);
+    hour.setAttribute("x2",0);
+    hour.setAttribute("y2",0.7*r);
+    hour.setAttribute("transform",`translate(${r},${r})`);
+    clockBox.appendChild(hour);
+
+    var minute=document.createElementNS("http://www.w3.org/2000/svg",'line'); //минутная стрелка
+    minute.setAttribute("stroke","rgb(51, 49, 49)");
+    minute.setAttribute("stroke-linecap","round");
+    minute.setAttribute("stroke-width",0.6*w);
+    minute.setAttribute("x1",0);
+    minute.setAttribute("y1",0);
+    minute.setAttribute("x2",0);
+    minute.setAttribute("y2",0.9*r);
+    hour.setAttribute("transform",`translate(${r},${r})`);
+    clockBox.appendChild(minute);
+
+    var second=document.createElementNS("http://www.w3.org/2000/svg",'line'); //секудная стрелка
+    second.setAttribute("stroke","rgb(51, 49, 49)");
+    second.setAttribute("stroke-linecap","round");
+    second.setAttribute("stroke-width",0.14*w);
+    second.setAttribute("x1",0);
+    second.setAttribute("y1",0);
+    second.setAttribute("x2",0);
+    second.setAttribute("y2",0.95*r);
+    hour.setAttribute("transform",`translate(${r},${r})`);
+    clockBox.appendChild(second);
+
+    var digClock=document.createElementNS("http://www.w3.org/2000/svg",'text'); //цифровые часы
+    digClock.setAttribute("x",r);
+    digClock.setAttribute("y",0.6*r);
+    digClock.setAttribute("text-anchor",'middle');
+    digClock.setAttribute("font-size",35);
+    digClock.setAttribute("font-weight",600);
+    clockBox.appendChild(digClock);  
+
+    function setTime() {
+        var time = new Date();
+        var h = time.getHours();
+        var m = time.getMinutes();
+        var s = time.getSeconds();
+
+        var digH = (h < 10) ? "0" + h : h; //значения для цифровых часов
+        var digM = (m < 10) ? "0" + m : m;//добавляем при необходимости 0 перед числами
+        var digS = (s < 10) ? "0" + s : s;
+        
+        digClock.textContent = digH + ":" + digM + ":" + digS;
+                   
+        var sAngle = 180 + 360/60*s; //находим углы поворота стрелок
+        var mAngle = 180 + 360/60*(m + s/60); //добавляем 180, что установить стрелки в начальное положение, на 12 ч. 
+        var hAngle = 180 + 360/12*(h + m/60);
+
+        hour.setAttribute('transform',`translate(${r},${r-15}) rotate(${hAngle} 0 15)`); //смещаем стрелки, а также координаты центра вращения на 15px
+        minute.setAttribute('transform',`translate(${r},${r-15}) rotate(${mAngle} 0 15)`);
+        second.setAttribute('transform',`translate(${r},${r-15}) rotate(${sAngle} 0 15)`);
+    }
+
+    setTime();
+    setInterval(setTime, 1000);
+
+  </script>
+
+</body>
+</html>
